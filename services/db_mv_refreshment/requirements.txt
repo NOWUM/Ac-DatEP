@@ -1,0 +1,5 @@
+psycopg2_binary
+python-dotenv
+python_dateutil
+pytz
+schedule

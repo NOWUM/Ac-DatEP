@@ -1,0 +1,15 @@
+fastapi
+fastapi_health
+GeoAlchemy2
+passlib
+pydantic
+python-dotenv
+SQLAlchemy
+starlette
+bcrypt
+PyJWT
+uvicorn
+psycopg2-binary
+python-multipart
+cryptography
+shapely

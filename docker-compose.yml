@@ -1,0 +1,123 @@
+version: "3.9"
+
+services:
+
+  database:
+    container_name: datep-database
+    image: timescale/timescaledb-ha:pg16-oss
+    env_file: ".env"
+    user: root
+    volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+      - ./data/postgresql/:/home/postgres/pgdata
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U ${MOBILITY_DB_USERNAME} -d ${MOBILITY_DB_NAME}"]
+      interval: 10s
+      retries: 5
+      start_period: 15s
+      timeout: 10s
+
+  api:
+    container_name: datep-api
+    build: ./api
+    environment:
+    env_file: ".env"
+    ports:
+      - 8024:8000
+    restart: always
+    healthcheck:
+      test: curl --fail http://localhost:8000/health || exit 1
+      interval: 10s
+      retries: 5
+      start_period: 20s
+    depends_on:
+      database:
+        condition: service_healthy
+
+  inrix_crawler:
+    container_name: datep-inrix-crawler
+    build: ./crawler/inrix
+    env_file: ".env"
+    depends_on:
+      database:
+        condition: service_healthy
+
+  frost_crawler:
+    container_name: datep-frost-crawler
+    build: ./crawler/frost_db_aachen
+    env_file: ".env"
+    restart: always
+    depends_on:
+      database:
+        condition: service_healthy
+
+  events_crawler:
+    container_name: datep-events-crawler
+    build: ./crawler/events_aachen
+    env_file: ".env"
+    restart: always
+    depends_on:
+      database:
+        condition: service_healthy
+
+  lanuv_crawler:
+    container_name: datep-lanuv-crawler
+    build: ./crawler/lanuv
+    env_file: ".env"
+    restart: always
+    depends_on:
+      database:
+        condition: service_healthy
+
+  sensor_community_crawler:
+    container_name: datep-sensor-community-crawler
+    build: ./crawler/sensor_community
+    env_file: ".env"
+    restart: always
+    depends_on:
+      database:
+        condition: service_healthy
+      api:
+        condition: service_healthy
+
+  4traffic_crawler:
+    container_name: datep-4traffic-crawler
+    build: ./crawler/4traffic_sensors
+    env_file: ".env"
+    restart: always
+    depends_on:
+      database:
+        condition: service_healthy
+
+  db_mv_refreshment_service:
+    container_name: datep-db-mv-refreshment-service
+    build: ./services/db_mv_refreshment
+    env_file: ".env"
+    restart: always
+    depends_on:
+      database:
+        condition: service_healthy
+
+  internal_dashboard:
+    container_name: datep-internal-dashboard
+    build: ./dashboards/internal
+    env_file: ".env"
+    restart: always
+    ports:
+      - "8501:8501"
+    depends_on:
+      database:
+        condition: service_healthy
+
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    user: root
+    env_file: ".env"
+    ports:
+      - "8080:80"
+    volumes:
+      - ./data/pgadmin:/var/lib/pgadmin
+      - ./data/provisioning/pgadmin/servers.json:/pgadmin4/servers.json

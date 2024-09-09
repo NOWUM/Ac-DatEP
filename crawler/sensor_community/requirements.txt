@@ -1,0 +1,8 @@
+GeoAlchemy2
+geopandas
+pandas
+python-dotenv
+Requests
+Shapely
+SQLAlchemy
+urllib3

@@ -1,0 +1,9 @@
+numpy
+pandas
+plotly
+pydeck
+python-dotenv
+Shapely
+SQLAlchemy
+streamlit
+psycopg2_binary
