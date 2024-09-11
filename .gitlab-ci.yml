@@ -1,0 +1,125 @@
+default:
+  tags:
+    - nowum
+
+stages:
+- build
+- deploy
+
+build-api:
+  image: docker:dind
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - cd api
+    - docker build -f Dockerfile  -t "$CI_REGISTRY_IMAGE/api:latest" .
+    - docker push $CI_REGISTRY_IMAGE/api:latest
+
+build-events:
+  image: docker:dind
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - cd crawler/events_aachen/
+    - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/crawler/events:latest" .
+    - docker push $CI_REGISTRY_IMAGE/crawler/events:latest
+
+build-inrix:
+  image: docker:dind
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - cd crawler/inrix/
+    - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/crawler/inrix:latest" .
+    - docker push $CI_REGISTRY_IMAGE/crawler/inrix:latest
+
+build-frost:
+  image: docker:dind
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - cd crawler/frost_db_aachen/
+    - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/crawler/frost:latest" .
+    - docker push $CI_REGISTRY_IMAGE/crawler/frost:latest
+
+build-lanuv:
+  image: docker:dind
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - cd crawler/lanuv/
+    - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/crawler/lanuv:latest" .
+    - docker push $CI_REGISTRY_IMAGE/crawler/lanuv:latest
+
+build-sensor-community:
+  image: docker:dind
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - cd crawler/sensor_community/
+    - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/crawler/sensor_community:latest" .
+    - docker push $CI_REGISTRY_IMAGE/crawler/sensor_community:latest
+
+build-4traffic-sensors:
+  image: docker:dind
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - cd crawler/4traffic_sensors/
+    - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/crawler/4traffic_sensors:latest" .
+    - docker push $CI_REGISTRY_IMAGE/crawler/4traffic_sensors:latest
+
+build-db-mv-refreshment:
+  image: docker:dind
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - cd services/db_mv_refreshment/
+    - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/services/db_mv_refreshment:latest" .
+    - docker push $CI_REGISTRY_IMAGE/services/db_mv_refreshment:latest
+
+build-internal-dashboard:
+  image: docker:dind
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - cd dashboards/internal/
+    - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/dashboards/internal:latest" .
+    - docker push $CI_REGISTRY_IMAGE/dashboards/internal:latest
+
+deploy-app:
+  image: alpine:latest
+  stage: deploy
+  script:
+    - chmod og= $SSH_ED25519
+    - apk update && apk add openssh-client
+    - ssh -i $SSH_ED25519 -o StrictHostKeyChecking=no $SERVER_USER@$SERVER_IP "cd acdatep && docker-compose pull && docker-compose down && docker-compose up -d && docker system prune -f"
+  only:
+    - main
