@@ -22,7 +22,6 @@ services:
   api:
     container_name: datep-api
     build: ./api
-    environment:
     env_file: ".env"
     ports:
       - 8024:8000
