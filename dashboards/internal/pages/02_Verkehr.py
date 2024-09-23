@@ -59,11 +59,13 @@ with kfz_tab:
             max_value=3,
             color_dict=coloring.KFZ_COLOR_DICT)
 
+        tooltip = {"text": "{description}\n congestion level {value}\n {timestamp_local_str}\n Datastream ID: {datastream_id}"}
+
         # create map
         logging.info("Creating traffic deck")
         kfz_deck = graphing.create_path_pydeck(
             data=kfz_mapdata,
-            tooltip={"text": "{description}\n congestion level {value}\n {timestamp_local_str}"})
+            tooltip=tooltip)
 
         st.pydeck_chart(kfz_deck)
 
