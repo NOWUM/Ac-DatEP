@@ -6,6 +6,8 @@ __pycache__/
 # streamlit
 *.streamlit
 
+/analysis/
+
 # C extensions
 *.so
 
