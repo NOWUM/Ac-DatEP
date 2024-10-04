@@ -129,6 +129,7 @@ def prepare_location_dataframe():
 
     return sensors
 
+
 def prepare_non_inrix_sensors():
 
     non_traffic_sensors = st.session_state["sensors"].copy()
@@ -511,6 +512,7 @@ def convert_to_timezone(
     data["timestamp_local_str"] = data["timestamp_local"].dt.strftime(format)
 
     return data
+
 
 def fetch_prepare_measurements(
         datastreams: pd.DataFrame,

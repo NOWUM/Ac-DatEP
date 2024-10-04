@@ -70,15 +70,6 @@ def display_sidebar():
 
     with st.sidebar:
 
-        # pages
-        st.header("Seiten")
-        st.page_link("Home.py", label="Home")
-        st.page_link("pages/01_Luftqualität.py", label="Luft")
-        st.page_link("pages/02_Verkehr.py", label="Verkehr")
-        st.page_link("pages/03_Parken.py", label="Parken")
-        st.page_link("pages/04_Ladesäulen.py", label="E-Ladesläulen")
-        st.write("-----------------------")
-
         # settings
         st.header("Einstellungen")
 

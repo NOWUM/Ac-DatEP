@@ -65,7 +65,7 @@ layer = pdk.Layer(
 viewstate = graphing.create_viewstate()
 
 # tooltip for pydeck
-tooltip = {"text": "Quelle: {source}\n Position: {latitude}N, {longitude}E"}
+tooltip = {"text": "Quelle: {source}\n Position: {latitude}N, {longitude}E\n Sensor ID: {id}"}
 
 # the deck
 deck = pdk.Deck(
