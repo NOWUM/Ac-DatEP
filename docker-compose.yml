@@ -81,8 +81,8 @@ services:
       api:
         condition: service_healthy
 
-  4traffic_crawler:
-    container_name: datep-4traffic-crawler
+  4traffic_sensors_crawler:
+    container_name: datep-4traffic-sensors-crawler
     build: ./crawler/4traffic_sensors
     env_file: ".env"
     restart: always
