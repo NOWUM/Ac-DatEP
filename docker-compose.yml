@@ -90,6 +90,15 @@ services:
       database:
         condition: service_healthy
 
+  4traffic_einzelhandel_crawler:
+    container_name: datep-4traffic-einzelhandel-crawler
+    build: ./crawler/4traffic_einzelhandel
+    env_file: ".env"
+    restart: always
+    depends_on:
+      database:
+        condition: service_healthy
+
   db_mv_refreshment_service:
     container_name: datep-db-mv-refreshment-service
     build: ./services/db_mv_refreshment
