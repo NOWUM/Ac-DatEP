@@ -110,7 +110,7 @@ def process_payload(payload: dict):
                 return 0
 
         # convert timestamp to useable python datetime format
-        timestamp = datetime.now(tz=pytz.timezone("Europe/Berlin")).isoformat()
+        timestamp = datetime.now().isoformat()
 
         # insert measurement into table
         insert_measurement(
