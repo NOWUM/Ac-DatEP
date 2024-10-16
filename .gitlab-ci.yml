@@ -90,6 +90,18 @@ build-4traffic-sensors:
     - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/crawler/4traffic_sensors:latest" .
     - docker push $CI_REGISTRY_IMAGE/crawler/4traffic_sensors:latest
 
+build-4traffic-einzelhandel:
+  image: docker:dind
+  services:
+    - docker:dind
+  stage: build
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
+  script:
+    - cd crawler/4traffic_einzelhandel/
+    - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/crawler/4traffic_einzelhandel:latest" .
+    - docker push $CI_REGISTRY_IMAGE/crawler/4traffic_einzelhandel:latest
+
 build-db-mv-refreshment:
   image: docker:dind
   services:
