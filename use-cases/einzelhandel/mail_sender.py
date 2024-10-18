@@ -30,7 +30,7 @@ def send_email(receiver_email: str, receiver_name: str, month_str: str, output_f
     # Add body to email
     message.attach(MIMEText(body, "plain"))
 
-    filename = f"{output_file}.pdf"  # In same directory as script
+    filename = f"./use-cases/einzelhandel/{output_file}.pdf"  # In same directory as script
 
     # Open PDF file in binary mode
     with open(filename, "rb") as attachment:
@@ -45,7 +45,7 @@ def send_email(receiver_email: str, receiver_name: str, month_str: str, output_f
     # Add header as key/value pair to attachment part
     part.add_header(
         "Content-Disposition",
-        f"attachment; filename= {filename}",
+        f"attachment; filename= {output_file}.pdf",
     )
 
     # Add attachment to message and convert message to string
