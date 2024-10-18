@@ -65,6 +65,4 @@ def create_notebook(year, month, month_str, sensorbox_id, address, name, output_
     # Run the notebook
     os.system(f"jupyter nbconvert --execute --to webpdf --no-input ./use-cases/einzelhandel/einzelhandelsbericht.ipynb --log-level 40 --output {output_file}")
     
-    # check pdf
-    os.system(f'open {output_file}.pdf')
     input("Check pdf and press Enter to continue...")
