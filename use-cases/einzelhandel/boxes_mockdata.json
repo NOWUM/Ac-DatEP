@@ -1,0 +1,13 @@
+[
+  {
+    "sensorbox_id": 247,
+    "store_name": "AC-DatEP",
+    "address": "Beispielstrasse 123, 52070 Aachen",
+    "receivers": [
+      {
+        "email": "kellershohn@fh-aachen.de",
+        "name": "Jan Kellershohn"
+      }
+    ]
+  }
+]

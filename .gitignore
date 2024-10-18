@@ -17,6 +17,9 @@ data/
 # env file
 */.env
 
+# pdf files
+*.pdf
+
 # jupyter notebooks
 *.ipynb
 
