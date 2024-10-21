@@ -75,6 +75,10 @@ def process_payload(payload: dict):
     # and data (temperature, humidity, ...) from payload
     data, metadata = fetch_data_metadata_from_payload(payload)
 
+    # exit if data or device ID is missing
+    if data == -1 or metadata == -1:
+        return 0
+
     # build connection to database
     con = connect()
 
@@ -142,10 +146,18 @@ def convert_to_pydatetime(orig_timestamp: str):
 
 def fetch_data_metadata_from_payload(payload: dict) -> tuple[dict, dict]:
 
-    data = deepcopy(payload["uplink_message"]["decoded_payload"])
+    data = deepcopy(payload["uplink_message"].get("decoded_payload", -1))
+
+    if data == -1:
+        logging.warning("No data delivered")
+        return -1, -1
 
     metadata = {}
-    metadata["device_id"] = deepcopy(payload["end_device_ids"]["device_id"])
+    metadata["device_id"] = deepcopy(payload["end_device_ids"].get("device_id", -1))
+
+    if metadata["device_id"] == -1:
+        logging.warning("No device ID delivered")
+        return -1, -1
 
     return data, metadata
 
