@@ -13,6 +13,7 @@ BOXES_DATABASE_TYPE_DICT = {
     "blu": "bluetooth",
     "ble": "bluetooth",
     "temp": "temperature",
+    "wifi": "wifi",
     "co2": "CO2",
     "pm10": "PM10",
     "pm25": "PM2.5",
