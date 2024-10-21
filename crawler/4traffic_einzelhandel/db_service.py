@@ -13,6 +13,7 @@ BOXES_DATABASE_TYPE_DICT = {
     "blu": "bluetooth",
     "ble": "bluetooth",
     "temp": "temperature",
+    "wifi": "wifi",
     "co2": "CO2",
     "pm10": "PM10",
     "pm25": "PM2.5",
@@ -74,6 +75,10 @@ def process_payload(payload: dict):
     # and data (temperature, humidity, ...) from payload
     data, metadata = fetch_data_metadata_from_payload(payload)
 
+    # exit if data or device ID is missing
+    if data == -1 or metadata == -1:
+        return 0
+
     # build connection to database
     con = connect()
 
@@ -87,6 +92,11 @@ def process_payload(payload: dict):
         # convert to DB format
         _type = BOXES_DATABASE_TYPE_DICT.get(key, key)
         unit = BOXES_DATABASE_UNIT_DICT.get(_type, "")
+
+        # skip everything which is not wifi or bluetooth connections
+        if _type not in ["wifi", "bluetooth"]:
+            logging.info(f"Skipping {_type}")
+            continue
 
         # log warning for unknown datastream type
         if _type not in BOXES_DATABASE_TYPE_DICT.values():
@@ -141,10 +151,18 @@ def convert_to_pydatetime(orig_timestamp: str):
 
 def fetch_data_metadata_from_payload(payload: dict) -> tuple[dict, dict]:
 
-    data = deepcopy(payload["uplink_message"]["decoded_payload"])
+    data = deepcopy(payload["uplink_message"].get("decoded_payload", -1))
+
+    if data == -1:
+        logging.warning("No data delivered")
+        return -1, -1
 
     metadata = {}
-    metadata["device_id"] = deepcopy(payload["end_device_ids"]["device_id"])
+    metadata["device_id"] = deepcopy(payload["end_device_ids"].get("device_id", -1))
+
+    if metadata["device_id"] == -1:
+        logging.warning("No device ID delivered")
+        return -1, -1
 
     return data, metadata
 
