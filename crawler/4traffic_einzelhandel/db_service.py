@@ -89,6 +89,11 @@ def process_payload(payload: dict):
     # iterate over data / measurements
     for key, measurement in data.items():
 
+        # dont store "timesync_seqno"
+        if "timesync" in key:
+            logging.info(f"Skipping {key}")
+            continue
+
         # convert to DB format
         _type = BOXES_DATABASE_TYPE_DICT.get(key, key)
         unit = BOXES_DATABASE_UNIT_DICT.get(_type, "")
