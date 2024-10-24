@@ -272,4 +272,5 @@ def insert_measurement(
     except Exception as e:
         con.rollback()
         logging.error(e)
+        logging.error(f"Datastream_id: {datastream_id}, timestamp: {timestamp}, value: {value}")
         return -1
