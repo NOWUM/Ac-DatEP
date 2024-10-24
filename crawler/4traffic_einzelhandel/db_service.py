@@ -151,7 +151,12 @@ def convert_to_pydatetime(orig_timestamp: str):
 
 def fetch_data_metadata_from_payload(payload: dict) -> tuple[dict, dict]:
 
-    data = deepcopy(payload["uplink_message"].get("decoded_payload", -1))
+    message = deepcopy(payload.get("uplink_message", -1))
+    if message == -1:
+        logging.warning("No data delivered")
+        return -1, -1
+
+    data = deepcopy(message.get("decoded_payload", -1))
 
     if data == -1:
         logging.warning("No data delivered")
