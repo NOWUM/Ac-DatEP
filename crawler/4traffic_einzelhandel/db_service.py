@@ -89,6 +89,10 @@ def process_payload(payload: dict):
     # iterate over data / measurements
     for key, measurement in data.items():
 
+        if measurement == None:
+            logging.warning("No measurement provided - skipping")
+            continue
+
         # convert to DB format
         _type = BOXES_DATABASE_TYPE_DICT.get(key, key)
         unit = BOXES_DATABASE_UNIT_DICT.get(_type, "")
