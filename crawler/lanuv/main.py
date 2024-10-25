@@ -3,7 +3,7 @@ import db_service
 import os
 import logging
 import time
-from datetime import datetime
+import schedule
 
 import pandas as pd
 
@@ -167,6 +167,47 @@ def create_measurements_df(
         raise e
 
 
+def request_and_process():
+
+    # connect to database
+    con = db_service.connect()
+
+    # request values from LANUV
+    values_df = request_values()
+
+    # request column names from LANUV
+    columns_df = request_columns()
+
+    # clean up data
+    data = clean_data(
+        values_df=values_df,
+        columns_df=columns_df)
+
+    # create sensors and datastreams if they dont exist
+    if not db_service.sensors_exist():
+        sensor_ids = db_service.create_sensors(con)
+
+        db_service.create_datastreams(
+            con,
+            sensor_ids)
+
+    # retrieve the datastream IDs
+    datastream_ids = db_service.get_datastream_ids()
+
+    # creating measurements dataframe
+    measurements_df = create_measurements_df(
+        data=data,
+        datastream_ids=datastream_ids)
+
+    # write measurements to database
+    db_service.write_to_database(
+        con=con,
+        measurements=measurements_df)
+
+    con.commit()
+    con.close()
+
+
 if __name__ == "__main__":
 
     if logging_level_str == "INFO":
@@ -182,78 +223,12 @@ if __name__ == "__main__":
         format='%(asctime)s.%(msecs)03d %(levelname)s %(module)s - %(funcName)s: %(message)s',
         datefmt='%d-%m-%Y %H:%M:%S')
 
+    # schedule requesting and processing for every hour
+    schedule.every().hour.do(request_and_process)
+
+    # run job once on start up
+    schedule.run_all()
+
     while True:
-
-        # wait for it to be xx:30
-        current_minute = datetime.now().minute
-        current_minute = 30
-        while not current_minute == 30:
-            time.sleep(30)
-            current_minute = datetime.now().minute
-
-        start_time = time.time()
-
-        # connect to database
-        con = db_service.connect()
-
-        # try again in 5 minutes
-        if isinstance(con, int):
-            logging.error(
-                "Could not connect to database. Trying again in 5 minutes")
-            time.sleep(300)
-            break
-
-        # request values from LANUV
-        values_df = request_values()
-
-        # try again in 5 minutes
-        if isinstance(values_df, int):
-            logging.error(
-                "Could not retrieve values. Trying again in 5 minutes")
-            time.sleep(300)
-            break
-
-        # request column names from LANUV
-        columns_df = request_columns()
-
-        # try again in 5 minutes
-        if isinstance(columns_df, int):
-            logging.error(
-                "Could not retrieve columns. Trying again in 5 minutes")
-            time.sleep(300)
-            break
-
-        # clean up data
-        data = clean_data(
-            values_df=values_df,
-            columns_df=columns_df)
-
-        # create sensors and datastreams if they dont exist
-        if not db_service.sensors_exist():
-            sensor_ids = db_service.create_sensors(con)
-
-            db_service.create_datastreams(
-                con,
-                sensor_ids)
-
-        # retrieve the datastream IDs
-        datastream_ids = db_service.get_datastream_ids()
-
-        # creating measurements dataframe
-        measurements_df = create_measurements_df(
-            data=data,
-            datastream_ids=datastream_ids)
-
-        # write measurements to database
-        db_service.write_to_database(
-            con=con,
-            measurements=measurements_df)
-
-        con.commit()
-        con.close()
-
-        end_time = time.time()
-        elapsed_time = end_time - start_time
-
-        logging.info(f"Starting again in {(3600-elapsed_time) / 60} minutes")
-        time.sleep(3600 - elapsed_time)
+        schedule.run_pending()
+        time.sleep(1)
