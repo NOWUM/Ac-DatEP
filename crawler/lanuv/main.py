@@ -3,8 +3,9 @@ import db_service
 import os
 import logging
 import time
-import schedule
 
+import requests
+import schedule
 import pandas as pd
 
 
@@ -12,7 +13,14 @@ LANUV_STATIONS = os.getenv("LANUV_STATIONS", ["VACW", "AABU"])
 logging_level_str = os.getenv("LOGGING_LEVEL", "ERROR")
 
 
-def request_values() -> pd.DataFrame | int:
+def request_values(
+        date_from: str,
+        time_from: int,
+        date_to: str,
+        time_to: int,
+        station_id: str,
+        component: int,
+        scope: int) -> pd.DataFrame | int:
     """
     Function for requesting values for current air quality.
 
@@ -23,27 +31,25 @@ def request_values() -> pd.DataFrame | int:
 
     logging.info("Trying to request values from LANUV")
 
-    url = "https://www.lanuv.nrw.de/fileadmin/lanuv/luft/immissionen/aktluftqual/eu_luftqualitaet.csv"
+    url = f"https://www.umweltbundesamt.de/api/air_data/v3/measures/json"
+    url += f"?date_from={date_from}"
+    url += f"&time_from={time_from}"
+    url += f"&date_to={date_to}"
+    url += f"&time_to={time_to}"
+    url += f"&station={station_id}"
+    url += f"&component={component}"
+    url += f"&scope={scope}"
 
-    for attempt in range(5):
-        try:
-            values_df = pd.read_csv(
-                filepath_or_buffer=url,
-                delimiter=";",
-                encoding="cp1250",
-                skiprows=2,
-                header=None)
-            logging.info("Request successful")
-            return values_df
+    try:
+        response = requests.get(url)
 
-        except:
-            logging.warning(
-                f"Could retrieve values on attempt {attempt + 1}")
-            time.sleep(5)
-            pass
+        response.raise_for_status()
 
-    logging.error("Could not retrieve values in 5 tries")
-    return -1
+        response.json()["data"]
+
+    except Exception as e:
+        logging.error(f"Could not retrieve values: {e}")
+        return -1
 
 
 def request_columns() -> pd.DataFrame | int:
