@@ -1,4 +1,0 @@
-pandas
-psycopg2_binary
-Shapely
-sqlalchemy
