@@ -61,15 +61,6 @@ services:
       database:
         condition: service_healthy
 
-  lanuv_crawler:
-    container_name: datep-lanuv-crawler
-    build: ./crawler/lanuv
-    env_file: ".env"
-    restart: always
-    depends_on:
-      database:
-        condition: service_healthy
-
   sensor_community_crawler:
     container_name: datep-sensor-community-crawler
     build: ./crawler/sensor_community
