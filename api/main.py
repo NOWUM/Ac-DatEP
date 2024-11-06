@@ -9,6 +9,7 @@ from api.routers import (
     user_router,
     event_router,
     trafficlanes_router,
+    walkability_router,
     health_router)
 
 app = FastAPI(
@@ -35,5 +36,6 @@ app.include_router(datastream_router, tags=["Datastreams"])
 app.include_router(measurement_router, tags=["Measurements"])
 app.include_router(event_router, tags=["Events"])
 app.include_router(trafficlanes_router, tags=["Trafficlanes"])
+app.include_router(walkability_router, tags=["Walkability"])
 
 app.include_router(health_router, include_in_schema=False)

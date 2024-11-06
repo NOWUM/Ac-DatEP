@@ -6,6 +6,10 @@ from .models import Base
 from .auth.security import get_password_hash
 
 
+from dotenv import load_dotenv
+load_dotenv(dotenv_path=".env")
+
+
 class DatabaseService:
     """
     Service for managing database connections and sessions.

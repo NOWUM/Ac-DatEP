@@ -6,3 +6,4 @@ from .user import router as user_router
 from .event import router as event_router
 from .health import router as health_router
 from .trafficlanes import router as trafficlanes_router
+from .walkability import router as walkability_router

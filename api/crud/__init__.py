@@ -6,3 +6,4 @@ from .user import crud_user
 from .token import crud_token
 from .event import crud_event
 from .trafficlane import crud_trafficlane
+from .walkability import crud_walkability
