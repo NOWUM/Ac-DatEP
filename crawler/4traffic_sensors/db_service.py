@@ -99,7 +99,7 @@ def process_payload(payload: dict):
             latitude=data["lat"],
             longitude=data["lon"],
             geometry=f"POINT ({data['lon']} {data['lat']})",
-            confidential=False)
+            confidential=True)
 
         # exit if sensor creation failed
         if sensor_id == -1:
@@ -126,6 +126,13 @@ def process_payload(payload: dict):
             sensor_id=sensor_id,
             _type=_type)
 
+        # set confidentiality to True for CO2, PM10 and PM2.5
+        if _type in ["CO2", "PM10", "PM2.5"]:
+            confidential = True
+        else:
+            confidential = False
+
+
         # create datastream if it doenst exist
         if not datastream_id:
             datastream_id = create_datastream(
@@ -134,7 +141,7 @@ def process_payload(payload: dict):
                 ex_id=-1,
                 _type=_type,
                 unit=unit,
-                confidential=False)
+                confidential=confidential)
             # exit function if creation failed
             if datastream_id == -1:
                 return 0
@@ -148,7 +155,7 @@ def process_payload(payload: dict):
             datastream_id=datastream_id,
             timestamp=timestamp,
             value=measurement,
-            confidential=False)
+            confidential=confidential)
 
     # commit and close connection
     con.commit()

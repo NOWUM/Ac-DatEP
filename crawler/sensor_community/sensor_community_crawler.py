@@ -184,7 +184,7 @@ def create_sensors_df(initial_data: DataFrame) -> DataFrame:
     geometry = GeoSeries(sensor_points)
     geometry.set_crs(epsg=25832, inplace=True)
     sensors['geometry'] = geometry.apply(lambda x: x.wkt)
-    sensors['confidential'] = False
+    sensors['confidential'] = True
 
     return sensors
 
@@ -214,8 +214,13 @@ def create_datastreams_df(initial_data: DataFrame, sensors: DataFrame) -> DataFr
                 type_info = datastream_dict[col]['type']
                 unit_info = datastream_dict[col]['unit']
 
+                if type_info in ["PM10", "PM2.5"]:
+                    confidential = True
+                else:
+                    confidential = False
+
                 datastream = {'sensor_id': sensor_id, 'ex_id': -1, 'type': type_info, 'unit': unit_info,
-                              'confidential': False}
+                              'confidential': confidential}
                 datastreams.loc[len(datastreams)] = datastream
 
     datastreams["ex_id"] = datastreams["ex_id"].astype(str)
@@ -268,7 +273,8 @@ def create_measurements_df(response_data: DataFrame, datastreams: DataFrame,
             columns={
                 "ex_id_x": "datastream_ex_id",
                 "id_x": "datastream_id",
-                "ex_id_y": "sensor_ex_id"},
+                "ex_id_y": "sensor_ex_id",
+                "confidential_x": "confidential"},
             inplace=True)
 
         # we get the datastream IDs by merging
@@ -284,10 +290,7 @@ def create_measurements_df(response_data: DataFrame, datastreams: DataFrame,
 
         # only use measurement table columns
         measurements = measurements[
-            ["timestamp", "value", "datastream_id"]]
-
-        # create column for confidentiality
-        measurements["confidential"] = False
+            ["timestamp", "value", "datastream_id", "confidential"]]
 
         # finally reset index
         measurements.reset_index(drop=True)
