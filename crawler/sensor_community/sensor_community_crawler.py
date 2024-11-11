@@ -184,7 +184,7 @@ def create_sensors_df(initial_data: DataFrame) -> DataFrame:
     geometry = GeoSeries(sensor_points)
     geometry.set_crs(epsg=25832, inplace=True)
     sensors['geometry'] = geometry.apply(lambda x: x.wkt)
-    sensors['confidential'] = True
+    sensors['confidential'] = False
 
     return sensors
 
