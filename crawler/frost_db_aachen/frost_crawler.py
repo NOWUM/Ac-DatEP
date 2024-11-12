@@ -4,7 +4,10 @@ import logging
 import os
 import time
 from sqlalchemy import exc
+from dotenv import load_dotenv
 import frost_helper as helper
+
+load_dotenv()
 
 frost_username = os.getenv("FROST_DB_USERNAME", "")
 frost_password = os.getenv("FROST_DB_PASSWORD", "")
