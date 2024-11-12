@@ -43,8 +43,8 @@ def on_message(
 def create_configure_client() -> mqtt.Client:
 
     # read in user and password
-    user = os.getenv("TTN_APP_ID")
-    password = os.getenv("TTN_API_KEY")
+    user = os.getenv("TTN_EINZELHANDEL_APP_ID")
+    password = os.getenv("TTN_EINZELHANDEL_API_KEY")
 
     # create client
     client = mqtt.Client(mqtt.CallbackAPIVersion.VERSION2)
@@ -66,8 +66,8 @@ def create_configure_client() -> mqtt.Client:
 def connect(client: mqtt.Client) -> None:
 
     # read in host and port parameters
-    host = os.getenv("TTN_HOST", None)
-    port = int(os.getenv("TTN_PORT", None))
+    host = os.getenv("TTN_EINZELHANDEL_HOST", None)
+    port = int(os.getenv("TTN_EINZELHANDEL_PORT", None))
 
     # try 5 times to connect
     for i in range(6):
@@ -97,7 +97,7 @@ def connect(client: mqtt.Client) -> None:
 def subscribe(client: mqtt.Client) -> None:
 
     # read in topic to subscribe to
-    topic = os.getenv("TTN_TOPIC", None)
+    topic = os.getenv("TTN_EINZELHANDEL_TOPIC", None)
 
     if not topic:
         logging.warning(f"No topic to subscripe to provided. Using '#' (all).")
