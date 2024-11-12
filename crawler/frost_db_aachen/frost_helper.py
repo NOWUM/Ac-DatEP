@@ -371,7 +371,9 @@ def lookup_id_dict(
                     ON datastreams.sensor_id = sensors.id
                     WHERE sensors.source = \'Frost\'''',
                 con=conn)
-
+            
+        internal_ids.ex_id = pd.to_numeric(internal_ids.ex_id)
+        
         internal_ids = internal_ids[internal_ids["ex_id"].isin(external_ids)]
 
         return internal_ids
