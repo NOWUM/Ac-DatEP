@@ -375,7 +375,7 @@ class verkehr_crawler():
         # look up internal IDs for external IDs
         ds_id_dict = helper.lookup_id_dict(
             table_name="datastreams",
-            external_ids=datastreams["ds_id"].astype("string").to_list())
+            external_ids=datastreams["ds_id"].to_list())
         ds_id_dict['ex_id'] = pd.to_numeric(ds_id_dict['ex_id'])
         # filter for new datastreams
         new_datastreams = set(datastreams['ds_id']) - set(ds_id_dict['ex_id'])
@@ -392,7 +392,7 @@ class verkehr_crawler():
         # updated dictionary with new datastreams
         ds_id_dict = helper.lookup_id_dict(
             table_name="datastreams",
-            external_ids=datastreams["ds_id"].astype("string").to_list())
+            external_ids=datastreams["ds_id"].to_list())
         return ds_id_dict
 
     def crawl_and_feed_observations(self, BASE_URL: str, ds_list: list[int], userpw: tuple[str, str]):
