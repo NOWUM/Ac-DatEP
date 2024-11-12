@@ -151,7 +151,7 @@ class verkehr_crawler():
 
                 elif thing['properties'].get('type') == 'ParkingLocation':
                     rows_parking.append(
-                        helper.helper.fetch_things_parking(thing, 'location'))
+                        helper.fetch_things_parking(thing, 'location'))
                     namelist.append(thing.get('name', ''))
                     confidential_list.append(False)
 
