@@ -29,6 +29,10 @@ def on_message(
 
     logging.info("Received message, processing")
 
+    if "acdvu" in msg.topic:
+        logging.info(f"Not processing message with topic {msg.topic}")
+        return None
+
     # convert payload to json / dict
     try:
         payload = json.loads(msg.payload)
