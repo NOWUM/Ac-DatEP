@@ -5,7 +5,6 @@ import pandas as pd
 import geopandas as gpd
 import sqlalchemy
 from datetime import timedelta
-import requests
 from sqlalchemy.exc import IntegrityError
 
 from typing import List
