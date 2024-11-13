@@ -6,6 +6,7 @@ import time
 from sqlalchemy import exc
 import frost_helper as helper
 
+
 frost_username = os.getenv("FROST_DB_USERNAME", "")
 frost_password = os.getenv("FROST_DB_PASSWORD", "")
 
@@ -148,7 +149,7 @@ class verkehr_crawler():
 
                 elif thing['properties'].get('type') == 'ParkingLocation':
                     rows_parking.append(
-                        helper.helper.fetch_things_parking(thing, 'location'))
+                        helper.fetch_things_parking(thing, 'location'))
                     namelist.append(thing.get('name', ''))
                     confidential_list.append(False)
 
@@ -372,7 +373,7 @@ class verkehr_crawler():
         # look up internal IDs for external IDs
         ds_id_dict = helper.lookup_id_dict(
             table_name="datastreams",
-            external_ids=datastreams["ds_id"].astype("string").to_list())
+            external_ids=datastreams["ds_id"].to_list())
         ds_id_dict['ex_id'] = pd.to_numeric(ds_id_dict['ex_id'])
         # filter for new datastreams
         new_datastreams = set(datastreams['ds_id']) - set(ds_id_dict['ex_id'])
@@ -389,10 +390,10 @@ class verkehr_crawler():
         # updated dictionary with new datastreams
         ds_id_dict = helper.lookup_id_dict(
             table_name="datastreams",
-            external_ids=datastreams["ds_id"].astype("string").to_list())
+            external_ids=datastreams["ds_id"].to_list())
         return ds_id_dict
 
-    def crawl_and_feed_observations(self, BASE_URL: str, ds_list: list[int], userpw: tuple[str, str]):
+    def crawl_and_feed_observations(self, BASE_URL: str, ds_list: pd.DataFrame, userpw: tuple[str, str]):
         """Crawls all FROST Observations connected to the Datastreams in the
         database, starting from the date of the most recent observation
         connected to each specific datastream in the timescale db
@@ -402,8 +403,8 @@ class verkehr_crawler():
         ----------
         BASE_URL : str
             Basic database URL without request extensions
-        ds_list : list[int]
-            list of integers with datastream ids
+        ds_list : pd.DataFrame
+            pd.DataFrame with datastream ids
         userpw : tuple[str,str]
             tuple containing strings with FROST credentials
 
