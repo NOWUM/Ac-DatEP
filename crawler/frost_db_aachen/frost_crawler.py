@@ -393,7 +393,7 @@ class verkehr_crawler():
             external_ids=datastreams["ds_id"].to_list())
         return ds_id_dict
 
-    def crawl_and_feed_observations(self, BASE_URL: str, ds_list: list[int], userpw: tuple[str, str]):
+    def crawl_and_feed_observations(self, BASE_URL: str, ds_list: pd.DataFrame, userpw: tuple[str, str]):
         """Crawls all FROST Observations connected to the Datastreams in the
         database, starting from the date of the most recent observation
         connected to each specific datastream in the timescale db
@@ -403,8 +403,8 @@ class verkehr_crawler():
         ----------
         BASE_URL : str
             Basic database URL without request extensions
-        ds_list : list[int]
-            list of integers with datastream ids
+        ds_list : pd.DataFrame
+            pd.DataFrame with datastream ids
         userpw : tuple[str,str]
             tuple containing strings with FROST credentials
 
