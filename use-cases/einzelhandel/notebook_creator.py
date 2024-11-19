@@ -2,6 +2,7 @@ from datetime import datetime
 import calendar
 import json
 import os
+from db_service import connect, check_ds_data
 
 def add_one_month(orig_date):
     # advance year and month by one month
@@ -49,20 +50,29 @@ def make_arguments(year, month, month_str, sensorbox_id, address, name, output_f
       "start_date": start_date_str,
       "end_date": end_date_str,
       "month_str": month_str, 
-      "datastream_id": sensorbox_id,
+      "sensor_id": sensorbox_id,
       "name": name,
       "adresse":address
     }
     with open('use-cases/einzelhandel/arguments.json', 'w') as fid:
         json.dump(arguments, fid)
+    return arguments
 
 def create_notebook(year, month, month_str, sensorbox_id, address, name, output_file):
     # Create parameter file for jupyter-notebook
 
     arguments = make_arguments(year, month, month_str, sensorbox_id, address, name, output_file)
-    print("Creating PDF...")
+    con = connect()
+    data_exists = check_ds_data(con, sensorbox_id, arguments["start_date"], arguments["end_date"])
 
-    # Run the notebook
-    os.system(f"jupyter nbconvert --execute --to webpdf --no-input ./use-cases/einzelhandel/einzelhandelsbericht.ipynb --log-level 40 --output {output_file}")
-    
-    input("Check pdf and press Enter to continue...")
+    if data_exists:
+        print("Creating PDF...")
+
+        # Run the notebook
+        os.system(f"jupyter nbconvert --execute --to webpdf --no-input ./use-cases/einzelhandel/einzelhandelsbericht.ipynb --log-level 40 --output {output_file}")
+
+        input("Check pdf and press Enter to continue...")
+        return True
+    else:
+        print("No data for sensor box {sensorbox_id}. No file is created.")
+        return False
