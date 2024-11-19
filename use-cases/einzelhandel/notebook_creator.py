@@ -19,7 +19,6 @@ def add_one_month(orig_date):
     return orig_date.replace(year=new_year, month=new_month, day=new_day)
 
 def make_arguments(year, month, month_str, sensorbox_id, address, name, output_file):
-    now = datetime.now()
     
     start_year = year
     start_month = month
@@ -59,7 +58,6 @@ def make_arguments(year, month, month_str, sensorbox_id, address, name, output_f
     return arguments
 
 def create_notebook(year, month, month_str, sensorbox_id, address, name, output_file):
-    # Create parameter file for jupyter-notebook
 
     arguments = make_arguments(year, month, month_str, sensorbox_id, address, name, output_file)
     con = connect()

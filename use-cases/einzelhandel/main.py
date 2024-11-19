@@ -1,9 +1,11 @@
+import pandas as pd
+
 from mail_sender import send_email
 from notebook_creator import create_notebook
+
 from dotenv import load_dotenv
-import json
-import pandas as pd
 load_dotenv()
+
 
 def create_report_and_send():
     print("make sure that there are no empty cells in the ac_datep_vis.ipynb notebook!")

@@ -1,11 +1,11 @@
 import os
 import logging
 import pandas as pd
-from copy import deepcopy
 from datetime import datetime
 
 import psycopg2
 import psycopg2.extras
+
 
 def connect() -> psycopg2.extensions.connection:
 
@@ -93,7 +93,12 @@ def check_sensor_existence(
         logging.error(msg)
         return -1
 
-def load_ds_measurements(con: psycopg2.extensions.connection, sensor_id: int, start_time: str, end_time: str):
+
+def load_ds_measurements(
+        con: psycopg2.extensions.connection,
+        sensor_id: int,
+        start_time: str,
+        end_time: str):
     """
     Loads measurements from one datastream in a specific timeframe.
 
@@ -125,7 +130,8 @@ def load_ds_measurements(con: psycopg2.extensions.connection, sensor_id: int, st
         msg = f"Something went wrong: {e}"
         logging.error(msg)
         return -1
-    
+
+
 ## Get Location for datastream
 def load_ds_lonlat(con: psycopg2.extensions.connection, sensor_id: int):
     """
@@ -157,7 +163,12 @@ def load_ds_lonlat(con: psycopg2.extensions.connection, sensor_id: int):
         logging.error(msg)
         return -1
 
-def check_ds_data(con: psycopg2.extensions.connection, sensor_id: int, start_time: str, end_time: str):
+
+def check_ds_data(
+        con: psycopg2.extensions.connection,
+        sensor_id: int,
+        start_time: str,
+        end_time: str):
     sql = f"""
         SELECT *
         FROM einzelhandel.measurements
@@ -168,8 +179,7 @@ def check_ds_data(con: psycopg2.extensions.connection, sensor_id: int, start_tim
         AND timestamp < '{end_time}'
         LIMIT 1
     """
-    try: 
-        cur = con.cursor()
+    try:
         result = pd.read_sql(sql, con)
         if result.empty:
             msg = f"No data for sensor {sensor_id} for the time from {start_time} to {end_time}."
