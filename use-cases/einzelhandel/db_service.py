@@ -93,7 +93,7 @@ def check_sensor_existence(
         logging.error(msg)
         return -1
 
-def load_ds_measurements(con: psycopg2.extensions.connection, ds_id: int, start_time: str, end_time: str):
+def load_ds_measurements(con: psycopg2.extensions.connection, sensor_id: int, start_time: str, end_time: str):
     """
     Loads measurements from one datastream in a specific timeframe.
 
@@ -109,8 +109,10 @@ def load_ds_measurements(con: psycopg2.extensions.connection, ds_id: int, start_
     """
     sql = f"""
         SELECT *
-        FROM measurements
-        WHERE datastream_id = {ds_id}
+        FROM einzelhandel.measurements
+        JOIN einzelhandel.datastreams
+        ON einzelhandel.measurements.datastream_id = einzelhandel.datastreams.id
+        WHERE einzelhandel.datastreams.sensor_id = '{sensor_id}'
         AND timestamp > '{start_time}'
         AND timestamp < '{end_time}'
     """
@@ -125,7 +127,7 @@ def load_ds_measurements(con: psycopg2.extensions.connection, ds_id: int, start_
         return -1
     
 ## Get Location for datastream
-def load_ds_lonlat(con: psycopg2.extensions.connection, ds_id: int):
+def load_ds_lonlat(con: psycopg2.extensions.connection, sensor_id: int):
     """
     Loads measurements from one datastream in a specific timeframe.
 
@@ -144,7 +146,7 @@ def load_ds_lonlat(con: psycopg2.extensions.connection, ds_id: int):
         FROM sensors
         JOIN datastreams
         ON sensors.id = datastreams.sensor_id 
-        WHERE datastreams.id = {ds_id}
+        WHERE datastreams.id = {sensor_id}
     """
     try: 
         result = pd.read_sql(sql, con)
@@ -154,6 +156,31 @@ def load_ds_lonlat(con: psycopg2.extensions.connection, ds_id: int):
         msg = f"Something went wrong: {e}"
         logging.error(msg)
         return -1
+
+def check_ds_data(con: psycopg2.extensions.connection, sensor_id: int, start_time: str, end_time: str):
+    sql = f"""
+        SELECT *
+        FROM einzelhandel.measurements
+        JOIN einzelhandel.datastreams
+        ON einzelhandel.measurements.datastream_id = einzelhandel.datastreams.id
+        WHERE einzelhandel.datastreams.sensor_id = '{sensor_id}'
+        AND timestamp > '{start_time}'
+        AND timestamp < '{end_time}'
+        LIMIT 1
+    """
+    try: 
+        cur = con.cursor()
+        result = pd.read_sql(sql, con)
+        if result.empty:
+            msg = f"No data for sensor {sensor_id} for the time from {start_time} to {end_time}."
+            return False
+        else:
+            return True
+    except Exception as e:
+        con.rollback()
+        msg = f"Error retrieving data for sensor {sensor_id}: {e}"
+        logging.error(msg)
+        return False
 
 def check_datastream_existence(
         con: psycopg2.extensions.connection,
