@@ -2,6 +2,7 @@ from mail_sender import send_email
 from notebook_creator import create_notebook
 from dotenv import load_dotenv
 import json
+import pandas as pd
 load_dotenv()
 
 def create_report_and_send():
@@ -9,25 +10,26 @@ def create_report_and_send():
 
     # enter parameters here
     year = 2024
-    month = 8  # enter number between 1-12
+    month = 10  # enter number between 1-12
 
     # get month name
     month_str = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober',
                  'November', 'Dezember'][month - 1]
 
-    # get mock data:
-    with open('use-cases/einzelhandel/boxes_mockdata.json', 'r') as fid:
-        boxes = json.load(fid)
+    # get box data:
+    boxes = pd.read_csv('use-cases/einzelhandel/einzelhandel.csv', sep = ";", header = 2, encoding='latin-1')
+    # boxes = pd.read_csv('einzelhandel.csv', sep = ";", header = 2, encoding='latin-1')
 
-    for box in boxes:
-        output_filename = f"Besucher_Bericht_{month_str}_{box['sensorbox_id']}"
+    for index, box in boxes.iterrows():
+        
+        output_filename = f"Besucher_Bericht_{month_str}_{box['Box-ID']}"
 
         # run notebook and convert to pdf
-        create_notebook(year, month, month_str, box["sensorbox_id"], box["address"], box["store_name"], output_filename)
+        created = create_notebook(year, month, month_str, box["Box-ID"], box["Standort"], box["Unternehmen"], output_filename)
 
-        # send pdf to emails
-        for receiver in box["receivers"]:
-            send_email(receiver["email"], receiver["name"], month_str, output_filename)
+        if created:
+            # send pdf to emails
+            send_email(box["E-Mail"], box["Ansprechpartner"], month_str, output_filename)
 
         print("Done.")
 
