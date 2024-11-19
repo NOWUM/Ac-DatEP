@@ -18,7 +18,7 @@ def add_one_month(orig_date):
 
     return orig_date.replace(year=new_year, month=new_month, day=new_day)
 
-def make_arguments(year, month, month_str, sensorbox_id, address, name, output_file):
+def make_arguments(year, month, month_str, lat, lon, sensorbox_id, address, name, output_file):
     
     start_year = year
     start_month = month
@@ -50,6 +50,8 @@ def make_arguments(year, month, month_str, sensorbox_id, address, name, output_f
       "end_date": end_date_str,
       "month_str": month_str, 
       "sensor_id": sensorbox_id,
+      "latitude": lat,
+      "longitude": lon,
       "name": name,
       "adresse":address
     }
@@ -57,9 +59,9 @@ def make_arguments(year, month, month_str, sensorbox_id, address, name, output_f
         json.dump(arguments, fid)
     return arguments
 
-def create_notebook(year, month, month_str, sensorbox_id, address, name, output_file):
+def create_notebook(year, month, month_str, lat, lon, sensorbox_id, address, name, output_file):
 
-    arguments = make_arguments(year, month, month_str, sensorbox_id, address, name, output_file)
+    arguments = make_arguments(year, month, month_str, lat, lon, sensorbox_id, address, name, output_file)
     con = connect()
     data_exists = check_ds_data(con, sensorbox_id, arguments["start_date"], arguments["end_date"])
 

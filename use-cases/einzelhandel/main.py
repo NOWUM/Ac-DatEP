@@ -13,6 +13,9 @@ def create_report_and_send():
     # enter parameters here
     year = 2024
     month = 10  # enter number between 1-12
+    
+    lat = 50.775
+    lon = 6.083
 
     # get month name
     month_str = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober',
@@ -27,7 +30,9 @@ def create_report_and_send():
         output_filename = f"Besucher_Bericht_{month_str}_{box['Box-ID']}"
 
         # run notebook and convert to pdf
-        created = create_notebook(year, month, month_str, box["Box-ID"], box["Standort"], box["Unternehmen"], output_filename)
+        created = create_notebook(year, month, month_str, lat, lon,
+                                  box["Box-ID"], box["Standort"], box["Unternehmen"], 
+                                  output_filename)
 
         if created:
             # send pdf to emails
