@@ -1,3 +1,4 @@
 paho_mqtt
 psycopg2_binary
 pytz
+sqlalchemy
