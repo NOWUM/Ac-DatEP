@@ -8,3 +8,5 @@ from .event import crud_event
 from .trafficlane import crud_trafficlane
 from .walkability import crud_walkability
 from .bikeability import crud_bikeability
+from .event_datastream import crud_event_datastream
+from .event_measurements import crud_event_measurement
