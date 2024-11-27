@@ -117,7 +117,8 @@ def load_ds_measurements(
         FROM einzelhandel.measurements
         JOIN einzelhandel.datastreams
         ON einzelhandel.measurements.datastream_id = einzelhandel.datastreams.id
-        WHERE einzelhandel.datastreams.sensor_id = '{sensor_id}'
+        WHERE einzelhandel.datastreams.sensor_id = '{sensor_id}'  
+        AND einzelhandel.datastreams.type = 'bluetooth'
         AND timestamp > '{start_time}'
         AND timestamp < '{end_time}'
     """
