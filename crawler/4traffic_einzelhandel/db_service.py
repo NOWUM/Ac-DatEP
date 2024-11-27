@@ -2,7 +2,6 @@ import os
 import logging
 from copy import deepcopy
 from datetime import datetime
-import pytz
 
 import psycopg2
 import psycopg2.extras
@@ -77,6 +76,11 @@ def process_payload(payload: dict):
 
     # exit if data or device ID is missing
     if data == -1 or metadata == -1:
+        return 0
+
+    # exit if device ID does not contain "wilson"
+    if "wilson" not in metadata["device_id"]:
+        logging.info("Not a 'wilson' sensor - skipping")
         return 0
 
     # build connection to database
