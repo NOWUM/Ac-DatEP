@@ -12,7 +12,7 @@ def create_report_and_send():
 
     # enter parameters here
     year = 2024
-    month = 10  # enter number between 1-12
+    month = 11  # enter number between 1-12
     
     lat = 50.775
     lon = 6.083
