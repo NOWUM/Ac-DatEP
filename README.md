@@ -7,6 +7,11 @@
 
 This repository describes the main artifacts of the ACDatEP project. The aim of the project is to create a data pool with high temporal and spatial resolution measurements. There are various services in this repository for this purpose, which are described below.
 
+More information on the project can be found here:
+* [mFUND project page](https://bmdv.bund.de/SharedDocs/DE/Artikel/DG/mfund-projekte/ac-datep.html)
+* [FH Aachen website](https://www.aachener-datenpool.de)
+* [REST API documentation](https://acdatep.nowum.fh-aachen.de/api/docs)
+
 ## Getting started
 Quickest way to get started is docker:
 1. Fill out the .env file with your credentials / set credentials
@@ -57,7 +62,7 @@ Every table contains a column 'confidential' with default set to 'True', which i
 ### API
 A REST-API is deployed in a docker container which allows basic inserting / updating / querying of the tables mentioned above.
 
-A 'admin' type user (which can read / write / delete) and a 'read_all' type user (which can onlay read) can be configured in the .env file.
+A 'admin' type user (which can read / write / delete) and a 'read_all' type user (which can only read) can be configured in the .env file.
 
 ### Dashboards
 To help understand the data and make it more accessable, a streamlit dashboard, which visualizes the data inside the database, is provided as well.
