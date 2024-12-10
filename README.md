@@ -44,17 +44,6 @@ class measurements{
    BOOLEAN confidential NOT NULL
    DOUBLE PRECISION value NOT NULL
 }
-class tokens{
- *UUID id NOT NULL
-   TEXT institution NOT NULL
-   TEXT role NOT NULL
-}
-class users{
- *INTEGER id NOT NULL
-   VARCHAR hashed_password
-   VARCHAR role
-   VARCHAR username
-}
 sensors "1" -- "1..n" datastreams
 datastreams "1" -- "1..n" measurements
 ```
