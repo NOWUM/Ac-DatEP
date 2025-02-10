@@ -19,7 +19,7 @@ st.set_page_config(
 # perform default page jobs
 utils.perform_default_page_jobs()
 
-st.success("**Disclaimer:** Those values not obtained from LANUV use low cost sensors and may not always be accurate!")
+st.success("**Disclaimer:** The values not obtained from LANUV use low cost sensors and may not always be accurate!")
 
 # create tabs
 pm10_tab, pm25_tab, temperature_tab, co2_tab = st.tabs([
@@ -124,7 +124,7 @@ with pm25_tab:
         utils.add_color_to_data(
             data=pm25_mapdata,
             min_value=0,
-            max_value=50,
+            max_value=75,
             colorscale="Plasma")
 
         # create map
@@ -174,7 +174,6 @@ with temperature_tab:
     temperature_mapdata = utils.fetch_prepare_measurements(
         datastreams=temperature_datastreams,
         sensors=temperature_sensors)
-    temperature_mapdata = temperature_mapdata[temperature_mapdata["value"] < 60]
 
     if temperature_mapdata.empty:
         utils.display_no_data_warning()
@@ -188,9 +187,14 @@ with temperature_tab:
             colorscale="Plasma")
 
         # create map
+        temp_tooltip = {"text":
+           """Datastream ID: {datastream_id}
+           Wert: {value} °C
+           {timestamp_local_str}
+           Quelle: {source}"""}
         temperatue_deck = graphing.create_scatter_pydeck(
             data=temperature_mapdata,
-            tooltip=tooltip)
+            tooltip=temp_tooltip)
         st.pydeck_chart(temperatue_deck)
 
         st.markdown("----")
@@ -242,8 +246,8 @@ with co2_tab:
         # add color to measurements
         utils.add_color_to_data(
             data=co2_mapdata,
-            min_value=-20,
-            max_value=50,
+            min_value=300,
+            max_value=2000,
             colorscale="Plasma")
 
         # create map
