@@ -75,7 +75,9 @@ def refresh_latest_measurements_mv():
 def create_view_query(
         bucket: str,
         agg: str,
-        comparison_timestamp: str):
+        comparison_timestamp: str,
+        min_value: float = 1e9,
+        max_value: float = -1e9):
 
     viewname = f"""bucketed_measurements_{bucket.replace(" ", "")}_{agg}"""
 
@@ -87,6 +89,8 @@ def create_view_query(
             datastream_id
         FROM measurements
         WHERE timestamp >= '{comparison_timestamp}'
+        AND value < {max_value}
+        AND value > {min_value}
         GROUP BY bucket, datastream_id
         ORDER BY bucket, datastream_id ASC
     """
