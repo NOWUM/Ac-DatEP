@@ -19,6 +19,8 @@ st.set_page_config(
 # perform default page jobs
 utils.perform_default_page_jobs()
 
+st.success("**Disclaimer:** Those values not obtained from LANUV use low cost sensors and may not always be accurate!")
+
 # create tabs
 pm10_tab, pm25_tab, temperature_tab, co2_tab = st.tabs([
     "10µm-Feinstaub", "2.5µm-Feinstaub", "Temperatur", "CO₂"])
