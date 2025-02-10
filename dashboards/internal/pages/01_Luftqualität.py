@@ -21,7 +21,7 @@ utils.perform_default_page_jobs()
 
 # create tabs
 pm10_tab, pm25_tab, temperature_tab, co2_tab, ozon_tab = st.tabs([
-    "10µm-Feinstaub", "2.5µm-Feinstaub", "Temperatur", "CO₂", "Ozon"])
+    "10µm-Feinstaub", "2.5µm-Feinstaub", "Temperatur", "CO₂"])
 
 # tooltip is same for alle maps, so defining it here
 tooltip = {"text":
