@@ -38,7 +38,7 @@ parking_mapdata = utils.fetch_prepare_measurements(
 )
 
 
-map_tab, ts_tab, forecast_tab = st.tabs(["Karte", "Zeitreihe", "Forecast"])
+map_tab, ts_tab = st.tabs(["Karte", "Zeitreihe"])
 
 with map_tab:
     if parking_mapdata.empty:
