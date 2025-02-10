@@ -52,6 +52,8 @@ with pm10_tab:
     pm10_mapdata = utils.fetch_prepare_measurements(
         datastreams=pm10_datastreams,
         sensors=pm10_sensors)
+    pm10_mapdata = pm10_mapdata[pm10_mapdata["value"] < 150]
+
 
     if pm10_mapdata.empty:
         utils.display_no_data_warning()
@@ -112,6 +114,7 @@ with pm25_tab:
     pm25_mapdata = utils.fetch_prepare_measurements(
         datastreams=pm25_datastreams,
         sensors=pm25_sensors)
+    pm25_mapdata = pm25_mapdata[pm25_mapdata["value"] < 75]
 
     if pm25_mapdata.empty:
         utils.display_no_data_warning()
@@ -171,6 +174,7 @@ with temperature_tab:
     temperature_mapdata = utils.fetch_prepare_measurements(
         datastreams=temperature_datastreams,
         sensors=temperature_sensors)
+    temperature_mapdata = temperature_mapdata[temperature_mapdata["value"] < 60]
 
     if temperature_mapdata.empty:
         utils.display_no_data_warning()
