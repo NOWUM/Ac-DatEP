@@ -4,6 +4,7 @@ import utils
 import graphing
 
 import streamlit as st
+import pandas as pd
 
 
 # page layout and config
@@ -19,7 +20,7 @@ st.set_page_config(
 # perform default page jobs
 utils.perform_default_page_jobs()
 
-karte_tab, timeline_tab = st.tabs(["Karte", "Zeitreihe"])
+karte_tab, ts_tab = st.tabs(["Karte", "Zeitreihe"])
 
 with karte_tab:
 
@@ -58,13 +59,51 @@ with karte_tab:
             colorscale="Bluered")
 
         # create pydeck
-        tooltip_text = "Gesamt: {num_stations}\n"
-        tooltip_text += "Frei: {free_stations}\n"
-        tooltip_text += "Leistung: {max_power}kW {power_type}\n"
-        tooltip_text += "{timestamp_local_str}"
+        tooltip = "{description}\n"
+        tooltip += "Gesamt: {num_stations}\n"
+        tooltip += "Frei: {free_stations}\n"
+        tooltip += "Leistung: {max_power}kW {power_type}\n"
+        tooltip += "Datastream ID: {datastream_id}\n"
+        tooltip += "{timestamp_local_str}"
         charging_deck = graphing.create_scatter_pydeck(
             data=charging_mapdata,
-            tooltip={"text": tooltip_text})
+            tooltip={"text": tooltip})
 
         # display pydeck
         st.pydeck_chart(charging_deck)
+
+with ts_tab:
+
+    charging_station_park = st.selectbox(
+        label="Auswahl Ladepark",
+        options=["Alle"] + charging_sensors["description"].sort_values().tolist(),
+        key="charging_ts_id")
+
+    # get user input for timeframe and convert to viewname
+    viewname = utils.get_viewname_from_user_input(
+        label="charging_timeframe",
+        agg_type="avg")
+
+    # query timeseries measurements
+    charging_tsdata = utils.fetch_prepare_measurements(
+        datastreams=charging_datastreams,
+        sensors=charging_sensors,
+        viewname=viewname)
+
+    if charging_tsdata.empty:
+        utils.display_no_data_warning()
+    else:
+        # filter by station park
+        if charging_station_park == 'Alle':
+            pass
+        else:
+            charging_tsdata = charging_tsdata[charging_tsdata["description"] == charging_station_park]
+
+        # create figure
+        charging_fig = graphing.create_linefig(
+            data=charging_tsdata,
+            ylabel="Auslastung\n(1=komplett belegt, 0=alle frei)",
+            legend_title="Datastream ID")
+
+        # display
+        st.plotly_chart(charging_fig)
