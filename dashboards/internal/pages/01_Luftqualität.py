@@ -210,7 +210,6 @@ with temperature_tab:
         # display
         st.plotly_chart(temperature_fig)
 
-
 with co2_tab:
 
     logging.info("Filtering CO2 datastreams")
@@ -269,62 +268,3 @@ with co2_tab:
 
         # display
         st.plotly_chart(co2_fig)
-
-with ozon_tab:
-
-    logging.info("Filtering CO2 datastreams")
-    # filter datastreams for particles
-    ozon_datastreams = utils.filter_dataframe(
-        dataframe=st.session_state["datastreams"],
-        filter_column="type",
-        _filter=["Ozon"])
-
-    logging.info("Filtering Ozon sensor ids")
-    # query sensors for these datastreams
-    ozon_sensor_ids = ozon_datastreams["sensor_id"].to_list()
-    ozon_sensors = utils.filter_dataframe(
-        dataframe=st.session_state["sensors"],
-        filter_column="id",
-        _filter=ozon_sensor_ids)
-
-    ozon_mapdata = utils.fetch_prepare_measurements(
-        datastreams=ozon_datastreams,
-        sensors=ozon_sensors)
-
-    if ozon_mapdata.empty:
-        utils.display_no_data_warning()
-
-    else:
-        # add color to measurements
-        utils.add_color_to_data(
-            data=ozon_mapdata,
-            min_value=0,
-            max_value=120,
-            colorscale="Plasma")
-
-        # create map
-        ozon_deck = graphing.create_scatter_pydeck(
-            data=ozon_mapdata,
-            tooltip=tooltip)
-        st.pydeck_chart(ozon_deck)
-
-        st.markdown("----")
-
-        # get user input for timeframe and convert to viewname
-        viewname = utils.get_viewname_from_user_input(
-            label="ozon_timeframe",
-            agg_type="avg")
-
-        # query timeseries measurements
-        ozon_tsdata = utils.fetch_prepare_measurements(
-            datastreams=ozon_datastreams,
-            sensors=ozon_sensors,
-            viewname=viewname)
-
-        # create figure
-        ozon_fig = graphing.create_linefig(
-            data=ozon_tsdata,
-            ylabel="CO2 in μg/m³")
-
-        # display
-        st.plotly_chart(ozon_fig)
