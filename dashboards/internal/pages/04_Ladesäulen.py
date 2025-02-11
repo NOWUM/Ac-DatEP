@@ -107,3 +107,9 @@ with ts_tab:
 
         # display
         st.plotly_chart(charging_fig)
+
+source_html = """
+    <strong>Quellen</strong>
+    <p>Betreiber der Ladestationen in Aachen</p>
+    """
+st.html(source_html)

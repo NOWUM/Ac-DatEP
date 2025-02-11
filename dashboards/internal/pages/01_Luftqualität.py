@@ -93,7 +93,6 @@ with pm10_tab:
         # display
         st.plotly_chart(pm10_fig)
 
-
 with pm25_tab:
 
     logging.info("Filtering PM25 datastreams")
@@ -276,3 +275,10 @@ with co2_tab:
 
         # display
         st.plotly_chart(co2_fig)
+
+source_html = """
+    <strong>Quellen</strong>
+    <p><a href="https://luftqualitaet.nrw.de/lqistundentabelle.php"">LANUV</a></p>
+    <p>Eigene Messungen</p>
+    """
+st.html(source_html)
