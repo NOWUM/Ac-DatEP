@@ -127,3 +127,64 @@ with bike_tab:
 
         for fig in figs:
             st.plotly_chart(fig)
+
+with pedestrian_tab:
+
+    logging.info("Filtering bluetooth datastreams")
+    # filter datastreams for particles
+    ble_datastreams = utils.filter_dataframe(
+        dataframe=st.session_state["datastreams"],
+        filter_column="type",
+        _filter=["bluetooth"])
+
+    logging.info("Filtering bluetooth sensor ids")
+    # query sensors for these datastreams
+    ble_sensor_ids = ble_datastreams["sensor_id"].to_list()
+    ble_sensors = utils.filter_dataframe(
+        dataframe=st.session_state["sensors"],
+        filter_column="id",
+        _filter=ble_sensor_ids)
+
+    ble_mapdata = utils.fetch_prepare_measurements(
+        datastreams=ble_datastreams,
+        sensors=ble_sensors)
+
+
+    if ble_mapdata.empty:
+        utils.display_no_data_warning()
+
+    else:
+        # add color to measurements
+        utils.add_color_to_data(
+            data=ble_mapdata,
+            min_value=0,
+            max_value=500,
+            colorscale="Plasma")
+
+        # create map
+        tooltip = {"text": "Anzahl Fußgänger: {value}\n {timestamp_local_str}\n Datastream ID: {datastream_id}"}
+        ble_deck = graphing.create_scatter_pydeck(
+            data=ble_mapdata,
+            tooltip=tooltip)
+        st.pydeck_chart(ble_deck)
+
+        st.markdown("----")
+
+        # get user input for timeframe and convert to viewname
+        viewname = utils.get_viewname_from_user_input(
+            label="ble_timeframe",
+            agg_type="avg")
+
+        # query timeseries measurements
+        ble_tsdata = utils.fetch_prepare_measurements(
+            datastreams=ble_datastreams,
+            sensors=ble_sensors,
+            viewname=viewname)
+
+        # create figure
+        ble_fig = graphing.create_linefig(
+            data=ble_tsdata,
+            ylabel="Anzahl Fußgänger")
+
+        # display
+        st.plotly_chart(ble_fig)
