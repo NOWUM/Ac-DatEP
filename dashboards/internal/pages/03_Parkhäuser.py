@@ -41,6 +41,7 @@ parking_mapdata = utils.fetch_prepare_measurements(
 map_tab, ts_tab = st.tabs(["Karte", "Zeitreihe"])
 
 with map_tab:
+    st.header("Aktuelle Auslastung")
     if parking_mapdata.empty:
         utils.display_no_data_warning()
 

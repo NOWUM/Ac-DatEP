@@ -24,6 +24,8 @@ karte_tab, ts_tab = st.tabs(["Karte", "Zeitreihe"])
 
 with karte_tab:
 
+    st.header("Aktuelle Auslastung")
+
     logging.info("Filtering charging datastreams")
     # filter datastreams for particles
     charging_datastreams = utils.filter_dataframe(
