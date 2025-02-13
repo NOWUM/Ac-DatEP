@@ -3,9 +3,13 @@ import logging
 from datetime import datetime, timedelta
 from dateutil.relativedelta import relativedelta
 import pytz
+from multiprocessing import Pool, cpu_count
+
+import ladesaeulen_helper
 
 import schedule
 import psycopg2
+import pandas as pd
 
 from dotenv import load_dotenv
 load_dotenv()
@@ -135,6 +139,45 @@ def create_mv(
         return None
 
 
+def create_ladesaeulen_table():
+
+    try:
+        logging.info("Trying to create hourly ladesaeulen data")
+        datastreams = ladesaeulen_helper.get_datastreams()
+
+        ids = datastreams["id"].unique().tolist()[:10]
+
+        logging.info(f"Creating hourly data with {cpu_count() - 2} cores...")
+        with Pool(cpu_count()-2) as p:
+            hourly_dfs = p.map(ladesaeulen_helper.get_hourly, ids)
+
+        logging.info("Concating ladesaeulen DFs...")
+        hourly_all_df = pd.concat(
+            objs=hourly_dfs,
+            ignore_index=True,
+            copy=False)
+        logging.info("Succesfully created hourly ladesaeulen data")
+
+    except Exception as e:
+        logging.error(f"Could not calculate dataframe for ladesaeulen_hourly: {e}")
+        return None
+
+    try:
+        # create temporary table to create MV from
+        logging.info("Creating temporary table")
+        hourly_all_df.to_sql(
+            name="ladesaeulen_usage_hourly",
+            con=DB_URI,
+            schema="temporary",
+            if_exists="replace",
+            index=False)
+        logging.info("Succesfully created new temp table")
+
+    except Exception as e:
+        logging.error(f"Could not create ladesaeulen_hourly temp table: {e}")
+        return None
+
+
 if __name__ == "__main__":
 
     if logging_level_str == "INFO":
@@ -183,6 +226,9 @@ if __name__ == "__main__":
                                 agg="sum", time_delta=relativedelta(years=1))
     schedule.every(1).day.do(create_mv, bucket="1 week",
                              agg="sum", time_delta=relativedelta(years=30))
+
+    # view updating for charging stations data
+    schedule.every(4).weeks.do(create_ladesaeulen_table)
 
     logging.info("Trying to log ")
     # run all jobs once

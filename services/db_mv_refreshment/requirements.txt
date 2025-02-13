@@ -3,3 +3,7 @@ python-dotenv
 python_dateutil
 pytz
 schedule
+pandas
+holidays
+sqlalchemy
+requests
