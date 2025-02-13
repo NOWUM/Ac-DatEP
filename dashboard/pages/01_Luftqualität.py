@@ -279,6 +279,7 @@ with co2_tab:
 source_html = """
     <strong>Quellen</strong>
     <p><a href="https://luftqualitaet.nrw.de/lqistundentabelle.php"">LANUV</a></p>
+    <p><a href="https://sensor.community">Sensor Community</a><p>
     <p>Eigene Messungen</p>
     """
 st.html(source_html)
