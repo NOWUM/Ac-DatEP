@@ -123,8 +123,8 @@ build-internal-dashboard:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   script:
     - cd dashboards/internal/
-    - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/dashboards/internal:latest" .
-    - docker push $CI_REGISTRY_IMAGE/dashboards/internal:latest
+    - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/dashboard:latest" .
+    - docker push $CI_REGISTRY_IMAGE/dashboard:latest
 
 deploy-app:
   image: alpine:latest
