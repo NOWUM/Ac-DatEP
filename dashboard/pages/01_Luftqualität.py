@@ -19,7 +19,7 @@ st.set_page_config(
 # perform default page jobs
 utils.perform_default_page_jobs()
 
-st.success("**Disclaimer:** The values not obtained from LANUV use low cost sensors and may not always be accurate!")
+st.success("**Disclaimer:** Die nicht vom LANUV gemessenen Werte wurden mit Hilfe von Low-Cost-Sensorik gemessen, die nicht immer akkurat ist.")
 
 # create tabs
 pm10_tab, pm25_tab, temperature_tab, co2_tab = st.tabs([
@@ -92,7 +92,6 @@ with pm10_tab:
 
         # display
         st.plotly_chart(pm10_fig)
-
 
 with pm25_tab:
 
@@ -276,3 +275,11 @@ with co2_tab:
 
         # display
         st.plotly_chart(co2_fig)
+
+source_html = """
+    <strong>Quellen</strong>
+    <p><a href="https://luftqualitaet.nrw.de/lqistundentabelle.php"">LANUV</a></p>
+    <p><a href="https://sensor.community">Sensor Community</a><p>
+    <p>Eigene Messungen</p>
+    """
+st.html(source_html)

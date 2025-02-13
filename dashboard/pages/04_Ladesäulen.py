@@ -24,6 +24,8 @@ karte_tab, ts_tab = st.tabs(["Karte", "Zeitreihe"])
 
 with karte_tab:
 
+    st.header("Aktuelle Auslastung")
+
     logging.info("Filtering charging datastreams")
     # filter datastreams for particles
     charging_datastreams = utils.filter_dataframe(
@@ -107,3 +109,9 @@ with ts_tab:
 
         # display
         st.plotly_chart(charging_fig)
+
+source_html = """
+    <strong>Quellen</strong>
+    <p>Betreiber der Ladestationen in Aachen</p>
+    """
+st.html(source_html)

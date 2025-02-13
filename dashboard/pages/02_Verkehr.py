@@ -188,3 +188,10 @@ with pedestrian_tab:
 
         # display
         st.plotly_chart(ble_fig)
+
+source_html = """
+    <strong>Quellen</strong>
+    <p><a href="https://inrix.com/">INRIX</a></p>
+    <p>Eigene Messungen</p>
+    """
+st.html(source_html)

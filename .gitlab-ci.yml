@@ -114,7 +114,7 @@ build-db-mv-refreshment:
     - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/services/db_mv_refreshment:latest" .
     - docker push $CI_REGISTRY_IMAGE/services/db_mv_refreshment:latest
 
-build-internal-dashboard:
+build-dashboard:
   image: docker:dind
   services:
     - docker:dind
@@ -122,9 +122,9 @@ build-internal-dashboard:
   before_script:
     - echo "$CI_REGISTRY_PASSWORD" | docker login -u $CI_REGISTRY_USER --password-stdin $CI_REGISTRY
   script:
-    - cd dashboards/internal/
-    - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/dashboards/internal:latest" .
-    - docker push $CI_REGISTRY_IMAGE/dashboards/internal:latest
+    - cd dashboard/
+    - docker build -f Dockerfile -t "$CI_REGISTRY_IMAGE/dashboard:latest" .
+    - docker push $CI_REGISTRY_IMAGE/dashboard:latest
 
 deploy-app:
   image: alpine:latest

@@ -41,6 +41,7 @@ parking_mapdata = utils.fetch_prepare_measurements(
 map_tab, ts_tab = st.tabs(["Karte", "Zeitreihe"])
 
 with map_tab:
+    st.header("Aktuelle Auslastung")
     if parking_mapdata.empty:
         utils.display_no_data_warning()
 
@@ -90,3 +91,9 @@ with ts_tab:
 
         # display
         st.plotly_chart(pm10_fig)
+
+source_html = """
+    <strong>Quellen</strong>
+    <p>Betreiber der Parkhäuser in Aachen</p>
+    """
+st.html(source_html)

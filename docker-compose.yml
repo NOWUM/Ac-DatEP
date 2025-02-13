@@ -108,9 +108,9 @@ services:
       database:
         condition: service_healthy
 
-  internal_dashboard:
+  dashboard:
     container_name: datep-internal-dashboard
-    build: ./dashboards/internal
+    build: ./dashboard
     env_file: ".env"
     restart: always
     ports:
