@@ -108,7 +108,7 @@ services:
       database:
         condition: service_healthy
 
-  internal_dashboard:
+  dashboard:
     container_name: datep-internal-dashboard
     build: ./dashboard
     env_file: ".env"
