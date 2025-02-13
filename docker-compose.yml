@@ -110,7 +110,7 @@ services:
 
   internal_dashboard:
     container_name: datep-internal-dashboard
-    build: ./dashboards/internal
+    build: ./dashboard
     env_file: ".env"
     restart: always
     ports:
