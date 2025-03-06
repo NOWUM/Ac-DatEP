@@ -65,7 +65,7 @@ with charging_tab:
         FROM
             temporary.ladesaeulen_usage_hourly
         GROUP BY
-            dayofyear
+            EXTRACT(DOY FROM timestamp::timestamp)
         ORDER BY 
             dayofyear;
     """
