@@ -9,6 +9,8 @@ from sqlalchemy.exc import IntegrityError
 
 from typing import List
 
+from dotenv import load_dotenv
+load_dotenv()
 
 WEATHERTYPES = [
     'SIGNIFICANTWEATHER',
