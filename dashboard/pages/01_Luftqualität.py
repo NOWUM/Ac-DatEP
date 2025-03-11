@@ -4,6 +4,7 @@ import utils
 import graphing
 
 import streamlit as st
+import pandas as pd
 
 
 # page layout and config
@@ -19,7 +20,8 @@ st.set_page_config(
 # perform default page jobs
 utils.perform_default_page_jobs()
 
-st.success("**Disclaimer:** Die nicht vom LANUV gemessenen Werte wurden mit Hilfe von Low-Cost-Sensorik gemessen, die nicht immer akkurat ist.")
+disclaimer = "**Disclaimer:** Die verwendete Sensorik ist nicht kalibriert und nicht mit geeichter Sensorik vergleichbar. Die dargestellten Werte können stark von den tatsächlichen Werten abweichen."
+st.success(disclaimer)
 
 # create tabs
 pm10_tab, pm25_tab, temperature_tab, co2_tab = st.tabs([
@@ -93,6 +95,13 @@ with pm10_tab:
         # display
         st.plotly_chart(pm10_fig)
 
+        # add datastream table
+        pm10_table = pd.merge(
+            left=pm10_datastreams[["id", "sensor_id"]].rename(columns={"id": "datastream_id"}),
+            right=pm10_sensors[["source", "id", "geometry", "latitude", "longitude"]].rename(columns={"id": "sensor_id"}),
+            on="sensor_id")
+        st.dataframe(pm10_table, use_container_width=True)
+
 with pm25_tab:
 
     logging.info("Filtering PM25 datastreams")
@@ -152,6 +161,12 @@ with pm25_tab:
 
         # display
         st.plotly_chart(pm25_fig)
+
+        pm25_table = pd.merge(
+            left=pm25_datastreams[["id", "sensor_id"]].rename(columns={"id": "datastream_id"}),
+            right=pm25_sensors[["source", "id", "geometry", "latitude", "longitude"]].rename(columns={"id": "sensor_id"}),
+            on="sensor_id")
+        st.dataframe(pm25_table, use_container_width=True)
 
 with temperature_tab:
 
@@ -217,6 +232,12 @@ with temperature_tab:
         # display
         st.plotly_chart(temperature_fig)
 
+        temperature_table = pd.merge(
+            left=temperature_datastreams[["id", "sensor_id"]].rename(columns={"id": "datastream_id"}),
+            right=temperature_sensors[["source", "id", "geometry", "latitude", "longitude"]].rename(columns={"id": "sensor_id"}),
+            on="sensor_id")
+        st.dataframe(temperature_table, use_container_width=True)
+
 with co2_tab:
 
     logging.info("Filtering CO2 datastreams")
@@ -275,6 +296,12 @@ with co2_tab:
 
         # display
         st.plotly_chart(co2_fig)
+
+        co2_table = pd.merge(
+            left=co2_datastreams[["id", "sensor_id"]].rename(columns={"id": "datastream_id"}),
+            right=co2_sensors[["source", "id", "geometry", "latitude", "longitude"]].rename(columns={"id": "sensor_id"}),
+            on="sensor_id")
+        st.dataframe(co2_table, use_container_width=True)
 
 source_html = """
     <strong>Quellen</strong>
