@@ -19,7 +19,8 @@ st.set_page_config(
 # perform default page jobs
 utils.perform_default_page_jobs()
 
-st.success("**Disclaimer:** Die nicht vom LANUV gemessenen Werte wurden mit Hilfe von Low-Cost-Sensorik gemessen, die nicht immer akkurat ist.")
+disclaimer = "**Disclaimer:** Die verwendete Sensorik ist nicht kalibriert und nicht mit geeichter Sensorik vergleichbar. Die dargestellten Werte können stark von den tatsächlichen Werten abweichen."
+st.success(disclaimer)
 
 # create tabs
 pm10_tab, pm25_tab, temperature_tab, co2_tab = st.tabs([
