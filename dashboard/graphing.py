@@ -134,7 +134,7 @@ def create_linefig(
         is_bike: bool = False):
 
     data = data.copy()
-    data.sort_values(["timestamp_local", "datastream_id"], inplace=True)
+    data.sort_values(["datastream_id", "timestamp_local"], inplace=True)
 
     fig = px.line(
         data_frame=data,
