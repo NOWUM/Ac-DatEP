@@ -31,8 +31,8 @@ async def root():
     """
     return RedirectResponse(url='/api/docs')
 
-app.include_router(user_router, tags=["Users"])
-app.include_router(authentication_router, tags=["Authentication"])
+app.include_router(user_router, tags=["Users"], include_in_schema=False)
+app.include_router(authentication_router, tags=["Authentication"], include_in_schema=False)
 
 app.include_router(sensor_router, tags=["Sensors"])
 app.include_router(datastream_router, tags=["Datastreams"])
