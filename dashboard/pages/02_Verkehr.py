@@ -25,169 +25,187 @@ kfz_tab, bike_tab, pedestrian_tab = st.tabs(
 
 with kfz_tab:
 
-    # filter datastreams for particles
-    logging.info("Filtering traffic datastreams")
-    kfz_datastreams = utils.filter_dataframe(
-        dataframe=st.session_state["datastreams"],
-        filter_column="type",
-        _filter=["level of congestion"])
+    try:
 
-    # query sensors for these datastreams
-    logging.info("Filtering traffic sensor ids")
-    kfz_sensor_ids = kfz_datastreams["sensor_id"].to_list()
-    kfz_sensors = utils.filter_dataframe(
-        dataframe=st.session_state["sensors"],
-        filter_column="id",
-        _filter=kfz_sensor_ids)
+        # filter datastreams for particles
+        logging.info("Filtering traffic datastreams")
+        kfz_datastreams = utils.filter_dataframe(
+            dataframe=st.session_state["datastreams"],
+            filter_column="type",
+            _filter=["level of congestion"])
 
-    # fetching measurements
-    logging.info("Fetching and preparing measurements")
-    kfz_mapdata = utils.fetch_prepare_measurements(
-        datastreams=kfz_datastreams,
-        sensors=kfz_sensors,
-        is_traffic=True)
+        # query sensors for these datastreams
+        logging.info("Filtering traffic sensor ids")
+        kfz_sensor_ids = kfz_datastreams["sensor_id"].to_list()
+        kfz_sensors = utils.filter_dataframe(
+            dataframe=st.session_state["sensors"],
+            filter_column="id",
+            _filter=kfz_sensor_ids)
 
-    if kfz_mapdata.empty:
-        utils.display_no_data_warning()
+        # fetching measurements
+        logging.info("Fetching and preparing measurements")
+        kfz_mapdata = utils.fetch_prepare_measurements(
+            datastreams=kfz_datastreams,
+            sensors=kfz_sensors,
+            is_traffic=True)
 
-    else:
-        # add color to measurements
-        logging.info("Adding color to traffic data")
-        utils.add_color_to_data(
-            data=kfz_mapdata,
-            min_value=1,
-            max_value=3,
-            color_dict=coloring.KFZ_COLOR_DICT)
+        if kfz_mapdata.empty:
+            utils.display_no_data_warning()
 
-        tooltip = {"text": "{description}\n congestion level {value}\n {timestamp_local_str}\n Datastream ID: {datastream_id}"}
+        else:
+            # add color to measurements
+            logging.info("Adding color to traffic data")
+            utils.add_color_to_data(
+                data=kfz_mapdata,
+                min_value=1,
+                max_value=3,
+                color_dict=coloring.KFZ_COLOR_DICT)
 
-        # create map
-        logging.info("Creating traffic deck")
-        kfz_deck = graphing.create_path_pydeck(
-            data=kfz_mapdata,
-            tooltip=tooltip)
+            tooltip = {"text": "{description}\n congestion level {value}\n {timestamp_local_str}\n Datastream ID: {datastream_id}"}
 
-        st.pydeck_chart(kfz_deck)
+            # create map
+            logging.info("Creating traffic deck")
+            kfz_deck = graphing.create_path_pydeck(
+                data=kfz_mapdata,
+                tooltip=tooltip)
+
+            st.pydeck_chart(kfz_deck)
+
+    except Exception as e:
+        logging.error(f"Error in KFZ Tab: {e}")
+        utils.display_error_message()
 
 with bike_tab:
 
-    # query trafficlanes
-    if not "trafficlanes" in st.session_state:
-        logging.info("Querying trafficlanes from DB")
-        sql = "select * from trafficlanes"
-        st.session_state["trafficlanes"] = utils.query_datasbase(sql)
-    trafficlanes = st.session_state["trafficlanes"]
+    try:
 
-    logging.info("Filtering bike datastreams")
-    bike_datastreams = utils.filter_dataframe(
-        dataframe=st.session_state["datastreams"],
-        filter_column="type",
-        _filter=["bike traffic measurement"])
+        # query trafficlanes
+        if not "trafficlanes" in st.session_state:
+            logging.info("Querying trafficlanes from DB")
+            sql = "select * from trafficlanes"
+            st.session_state["trafficlanes"] = utils.query_datasbase(sql)
+        trafficlanes = st.session_state["trafficlanes"]
 
-    # query sensors for these datastreams
-    logging.info("Filtering bike sensors")
-    bike_sensor_ids = bike_datastreams["sensor_id"].to_list()
-    bike_sensors = utils.filter_dataframe(
-        dataframe=st.session_state["sensors"],
-        filter_column="id",
-        _filter=bike_sensor_ids)
+        logging.info("Filtering bike datastreams")
+        bike_datastreams = utils.filter_dataframe(
+            dataframe=st.session_state["datastreams"],
+            filter_column="type",
+            _filter=["bike traffic measurement"])
 
-    # get viewname
-    bike_viewname = utils.get_viewname_from_user_input(
-        label="bike_timeframe",
-        agg_type="sum")
+        # query sensors for these datastreams
+        logging.info("Filtering bike sensors")
+        bike_sensor_ids = bike_datastreams["sensor_id"].to_list()
+        bike_sensors = utils.filter_dataframe(
+            dataframe=st.session_state["sensors"],
+            filter_column="id",
+            _filter=bike_sensor_ids)
 
-    # query timeseries
-    bike_data = utils.fetch_prepare_measurements(
-        datastreams=bike_datastreams,
-        sensors=bike_sensors,
-        viewname=bike_viewname)
+        # get viewname
+        bike_viewname = utils.get_viewname_from_user_input(
+            label="bike_timeframe",
+            agg_type="sum")
 
-    # display no data warning if no data exists
-    if bike_data.empty:
-        utils.display_no_data_warning()
+        # query timeseries
+        bike_data = utils.fetch_prepare_measurements(
+            datastreams=bike_datastreams,
+            sensors=bike_sensors,
+            viewname=bike_viewname)
 
-    else:
-        # add trafficlanes info
-        bike_data = utils.add_trafficlanes_info(bike_data)
+        # display no data warning if no data exists
+        if bike_data.empty:
+            utils.display_no_data_warning()
 
-        # remove everythin that is not aggregation "h"
-        bike_data = bike_data[bike_data["aggregation"] == "h"].reset_index(drop=True)
+        else:
+            # add trafficlanes info
+            bike_data = utils.add_trafficlanes_info(bike_data)
 
-        # remove everything containing "Kfz" in trafficlanes information
-        bike_data = bike_data[~bike_data["lane"].str.contains("Kfz")].reset_index(drop=True)
+            # remove everythin that is not aggregation "h"
+            bike_data = bike_data[bike_data["aggregation"] == "h"].reset_index(drop=True)
 
-        # create a figure for each sensor ID
-        figs = bike_data.groupby("sensor_id").apply(
-            func=graphing.create_linefig,
-            color="lane",
-            ylabel="Summe der gezählten Radfahrer",
-            legend_title="Fahrtrichtung",
-            is_bike=True)
+            # remove everything containing "Kfz" in trafficlanes information
+            bike_data = bike_data[~bike_data["lane"].str.contains("Kfz")].reset_index(drop=True)
 
-        for fig in figs:
-            st.plotly_chart(fig)
+            # create a figure for each sensor ID
+            figs = bike_data.groupby("sensor_id").apply(
+                func=graphing.create_linefig,
+                color="lane",
+                ylabel="Summe der gezählten Radfahrer",
+                legend_title="Fahrtrichtung",
+                is_bike=True)
+
+            for fig in figs:
+                st.plotly_chart(fig)
+
+    except Exception as e:
+        logging.error(f"Error in Bike Tab: {e}")
+        utils.display_error_message()
 
 with pedestrian_tab:
 
-    logging.info("Filtering bluetooth datastreams")
-    # filter datastreams for particles
-    ble_datastreams = utils.filter_dataframe(
-        dataframe=st.session_state["datastreams"],
-        filter_column="type",
-        _filter=["bluetooth"])
+    try:
 
-    logging.info("Filtering bluetooth sensor ids")
-    # query sensors for these datastreams
-    ble_sensor_ids = ble_datastreams["sensor_id"].to_list()
-    ble_sensors = utils.filter_dataframe(
-        dataframe=st.session_state["sensors"],
-        filter_column="id",
-        _filter=ble_sensor_ids)
+        logging.info("Filtering bluetooth datastreams")
+        # filter datastreams for particles
+        ble_datastreams = utils.filter_dataframe(
+            dataframe=st.session_state["datastreams"],
+            filter_column="type",
+            _filter=["bluetooth"])
 
-    ble_mapdata = utils.fetch_prepare_measurements(
-        datastreams=ble_datastreams,
-        sensors=ble_sensors)
+        logging.info("Filtering bluetooth sensor ids")
+        # query sensors for these datastreams
+        ble_sensor_ids = ble_datastreams["sensor_id"].to_list()
+        ble_sensors = utils.filter_dataframe(
+            dataframe=st.session_state["sensors"],
+            filter_column="id",
+            _filter=ble_sensor_ids)
 
-
-    if ble_mapdata.empty:
-        utils.display_no_data_warning()
-
-    else:
-        # add color to measurements
-        utils.add_color_to_data(
-            data=ble_mapdata,
-            min_value=0,
-            max_value=500,
-            colorscale="Plasma")
-
-        # create map
-        tooltip = {"text": "Anzahl Fußgänger: {value}\n {timestamp_local_str}\n Datastream ID: {datastream_id}"}
-        ble_deck = graphing.create_scatter_pydeck(
-            data=ble_mapdata,
-            tooltip=tooltip)
-        st.pydeck_chart(ble_deck)
-
-        st.markdown("----")
-
-        # get user input for timeframe and convert to viewname
-        viewname = utils.get_viewname_from_user_input(
-            label="ble_timeframe",
-            agg_type="avg")
-
-        # query timeseries measurements
-        ble_tsdata = utils.fetch_prepare_measurements(
+        ble_mapdata = utils.fetch_prepare_measurements(
             datastreams=ble_datastreams,
-            sensors=ble_sensors,
-            viewname=viewname)
+            sensors=ble_sensors)
 
-        # create figure
-        ble_fig = graphing.create_linefig(
-            data=ble_tsdata,
-            ylabel="Anzahl Fußgänger")
 
-        # display
-        st.plotly_chart(ble_fig)
+        if ble_mapdata.empty:
+            utils.display_no_data_warning()
+
+        else:
+            # add color to measurements
+            utils.add_color_to_data(
+                data=ble_mapdata,
+                min_value=0,
+                max_value=500,
+                colorscale="Plasma")
+
+            # create map
+            tooltip = {"text": "Anzahl Fußgänger: {value}\n {timestamp_local_str}\n Datastream ID: {datastream_id}"}
+            ble_deck = graphing.create_scatter_pydeck(
+                data=ble_mapdata,
+                tooltip=tooltip)
+            st.pydeck_chart(ble_deck)
+
+            st.markdown("----")
+
+            # get user input for timeframe and convert to viewname
+            viewname = utils.get_viewname_from_user_input(
+                label="ble_timeframe",
+                agg_type="avg")
+
+            # query timeseries measurements
+            ble_tsdata = utils.fetch_prepare_measurements(
+                datastreams=ble_datastreams,
+                sensors=ble_sensors,
+                viewname=viewname)
+
+            # create figure
+            ble_fig = graphing.create_linefig(
+                data=ble_tsdata,
+                ylabel="Anzahl Fußgänger")
+
+            # display
+            st.plotly_chart(ble_fig)
+
+    except Exception as e:
+        logging.error(f"Error in Pedestrian Tab: {e}")
+        utils.display_error_message()
 
 source_html = """
     <strong>Quellen</strong>
