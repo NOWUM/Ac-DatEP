@@ -76,8 +76,8 @@ def create_view_query(
         bucket: str,
         agg: str,
         comparison_timestamp: str,
-        min_value: float = 1e9,
-        max_value: float = -1e9):
+        min_value: float = -1e9,
+        max_value: float = 1e9):
 
     viewname = f"""bucketed_measurements_{bucket.replace(" ", "")}_{agg}"""
 
@@ -89,8 +89,8 @@ def create_view_query(
             datastream_id
         FROM measurements
         WHERE timestamp >= '{comparison_timestamp}'
-        AND value < {max_value}
         AND value > {min_value}
+        AND value < {max_value}
         GROUP BY bucket, datastream_id
         ORDER BY bucket, datastream_id ASC
     """
@@ -184,7 +184,6 @@ if __name__ == "__main__":
     schedule.every(1).day.do(create_mv, bucket="1 week",
                              agg="sum", time_delta=relativedelta(years=30))
 
-    logging.info("Trying to log ")
     # run all jobs once
     schedule.run_all()
 
